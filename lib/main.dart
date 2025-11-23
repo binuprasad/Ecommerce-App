@@ -1,6 +1,7 @@
 import 'package:ecommerce_app/data/Repository/product_repository.dart';
 import 'package:ecommerce_app/data/datasource/remote_datasource.dart';
-import 'package:ecommerce_app/features/blocs/products/Product_details/product_detail_bloc.dart';
+import 'package:ecommerce_app/features/blocs/Product_details/product_detail_bloc.dart';
+import 'package:ecommerce_app/features/blocs/edit_product/edit_product_bloc.dart';
 import 'package:ecommerce_app/features/blocs/products/products_bloc.dart';
 import 'package:ecommerce_app/features/blocs/products/products_event.dart';
 import 'package:ecommerce_app/features/screens/product_list_screen.dart';
@@ -29,6 +30,10 @@ class MyApp extends StatelessWidget {
           RepositoryProvider(
             create: (context) =>
                 ProductRepository(context.read<ProductRemoteDataSource>()),
+          ),
+          BlocProvider(
+            create: (context) =>
+                EditProductBloc(context.read<ProductRepository>()),
           ),
         ],
         child: MultiBlocProvider(

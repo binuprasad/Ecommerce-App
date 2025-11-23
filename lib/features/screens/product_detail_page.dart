@@ -1,5 +1,6 @@
 import 'package:ecommerce_app/data/Repository/product_repository.dart';
-import 'package:ecommerce_app/features/blocs/products/Product_details/product_detail_bloc.dart';
+import 'package:ecommerce_app/features/blocs/Product_details/product_detail_bloc.dart';
+import 'package:ecommerce_app/features/screens/edit_product_page.dart';
 import 'package:ecommerce_app/features/widgets/option_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,36 +13,38 @@ class ProductDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: Padding(
-          padding: const EdgeInsets.all(4.0),
-          child: Card(
-            child: GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Icon(Icons.chevron_left_sharp),
+    return BlocProvider(
+      create: (_) =>
+          ProductDetailBloc(context.read<ProductRepository>())
+            ..add(LoadProductDetailEvent(id)),
+      child: Scaffold(
+        appBar: AppBar(
+          leading: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Card(
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Icon(Icons.chevron_left_sharp),
+              ),
             ),
           ),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          actions: const [Icon(Icons.favorite_border), SizedBox(width: 10)],
         ),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
 
-        actions: const [Icon(Icons.favorite_border), SizedBox(width: 10)],
-      ),
-      body: BlocProvider(
-        create: (_) =>
-            ProductDetailBloc(context.read<ProductRepository>())
-              ..add(LoadProductDetailEvent(id)),
-        child: BlocBuilder<ProductDetailBloc, ProductDetailState>(
+        body: BlocBuilder<ProductDetailBloc, ProductDetailState>(
           builder: (context, state) {
             if (state is ProductDetailLoading) {
               return Center(child: CircularProgressIndicator());
             } else if (state is ProductDetailError) {
               return Center(child: Text(state.message));
             } else if (state is ProductDetailsLoaded) {
+              print(state);
               final product = state.product;
+
               return DefaultTabController(
                 length: 2,
                 child: SingleChildScrollView(
@@ -56,10 +59,10 @@ class ProductDetailPage extends StatelessWidget {
                               width: double.infinity,
                               height: 220.h,
                               decoration: BoxDecoration(
-                                // color: const Color(0xFFF5F4FF),
                                 borderRadius: BorderRadius.circular(24.r),
                               ),
                             ),
+
                             Positioned.fill(
                               child: Align(
                                 alignment: Alignment.center,
@@ -69,8 +72,12 @@ class ProductDetailPage extends StatelessWidget {
                                   ),
                                   child: CircleAvatar(
                                     radius: 100.r,
-                                    backgroundColor:  const Color.fromARGB(255, 205, 203, 221),
-                                    
+                                    backgroundColor: const Color.fromARGB(
+                                      255,
+                                      205,
+                                      203,
+                                      221,
+                                    ),
                                     child: Image.network(
                                       product.thumbnail,
                                       height: 180.h,
@@ -80,6 +87,7 @@ class ProductDetailPage extends StatelessWidget {
                                 ),
                               ),
                             ),
+
                             Positioned(
                               right: 12.w,
                               top: 16.h,
@@ -112,7 +120,7 @@ class ProductDetailPage extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(height: 20.h,),
+                      SizedBox(height: 20.h),
 
                       Padding(
                         padding: EdgeInsets.symmetric(
@@ -144,10 +152,7 @@ class ProductDetailPage extends StatelessWidget {
                       SizedBox(height: 20.h),
 
                       Padding(
-                        padding: EdgeInsets.symmetric(
-                         
-                          vertical: 5.h,
-                        ),
+                        padding: EdgeInsets.symmetric(vertical: 5.h),
                         child: TabBar(
                           tabAlignment: TabAlignment.start,
                           isScrollable: true,
@@ -171,7 +176,7 @@ class ProductDetailPage extends StatelessWidget {
                               child: Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 10.w),
                                 child: Text(
-                                  'Reviews',
+                                  "Reviews",
                                   style: TextStyle(fontSize: 16.sp),
                                 ),
                               ),
@@ -185,8 +190,7 @@ class ProductDetailPage extends StatelessWidget {
                       SizedBox(
                         height: 240.h,
                         child: TabBarView(
-                        
-                          physics: const NeverScrollableScrollPhysics(),
+                          physics: NeverScrollableScrollPhysics(),
                           children: [
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -198,39 +202,39 @@ class ProductDetailPage extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            Expanded(
-                              child: ListView.builder(
-                                itemCount: product.reviews.length,
-                                itemBuilder: (context, index) => Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: 5.h,
-                                    horizontal: 15.w,
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: .start,
-                                    children: [
-                                      Text(
-                                        product.reviews[index].comment,
-                                        style: TextStyle(
-                                          fontSize: 15.sp,
-                                          fontWeight: FontWeight.w600,
+
+                            ListView.builder(
+                              itemCount: product.reviews.length,
+                              itemBuilder: (context, index) => Padding(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 5.h,
+                                  horizontal: 15.w,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      product.reviews[index].comment,
+                                      style: TextStyle(
+                                        fontSize: 15.sp,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          '- ${product.reviews[index].reviewerName}',
                                         ),
-                                      ),
-                                      Row(
-                                        mainAxisAlignment: .spaceBetween,
-                                        children: [
-                                          Text(
-                                            '- ${product.reviews[index].reviewerName}',
-                                          ),
-                                          Text(
-                                            DateFormat('dd-MM-yyyy').format(
-                                              product.reviews[index].date,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
+                                        Text(
+                                          DateFormat(
+                                            'dd-MM-yyyy',
+                                          ).format(product.reviews[index].date),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
@@ -244,15 +248,43 @@ class ProductDetailPage extends StatelessWidget {
                 ),
               );
             }
+
             return Center(child: Text('Something went wrong!'));
           },
         ),
-      ),
+        floatingActionButton: Builder(
+          builder: (context) {
+            return FloatingActionButton(
+              backgroundColor: Colors.black,
+              child: Icon(Icons.edit, color: Colors.white),
+              onPressed: () {
+                final state = context.read<ProductDetailBloc>().state;
 
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.white,
-        onPressed: () {},
-        child: const Icon(Icons.edit),
+                if (state is ProductDetailsLoaded) {
+                  final product = state.product;
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => EditProductPage(
+                        id: product.id,
+                        title: product.title,
+                        price: product.price.toInt(),
+                        description: product.description,
+                      ),
+                    ),
+                  ).then((updated) {
+                    if (updated == true) {
+                      context.read<ProductDetailBloc>().add(
+                        LoadProductDetailEvent(product.id),
+                      );
+                    }
+                  });
+                }
+              },
+            );
+          },
+        ),
       ),
     );
   }

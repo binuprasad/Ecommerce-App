@@ -139,51 +139,54 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             ),
                             child: Stack(
                               children: [
-                                Column(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(10.r),
-                                      child: AspectRatio(
-                                        aspectRatio: 1.5,
-                                        child: Image.network(
-                                          product.thumbnail ?? "",
-                                          fit: BoxFit.cover,
-                                          errorBuilder:
-                                              (context, error, stackTrace) =>
-                                                  const Icon(
-                                                    Icons.image,
-                                                    size: 48,
-                                                  ),
+                                Padding(
+                                  padding:  EdgeInsets.all(5.w),
+                                  child: Column(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(10.r),
+                                        child: AspectRatio(
+                                          aspectRatio: 1.5,
+                                          child: Image.network(
+                                            product.thumbnail ?? "",
+                                            fit: BoxFit.cover,
+                                            errorBuilder:
+                                                (context, error, stackTrace) =>
+                                                    const Icon(
+                                                      Icons.image,
+                                                      size: 48,
+                                                    ),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    SizedBox(height: 5.h),
-                                    Text(
-                                      product.title ?? "",
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16.sp,
+                                      SizedBox(height: 5.h),
+                                      Text(
+                                        product.title ?? "",
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16.sp,
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(height: 5.h),
-                                    Text(
-                                      product.description ?? "",
-                                      maxLines: 2,
-                                      textAlign: TextAlign.center,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(fontSize: 13.sp),
-                                    ),
-                                    SizedBox(height: 5.h),
-                                    Text(
-                                      "\$ ${product.price ?? 0}",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16.sp,
+                                      SizedBox(height: 5.h),
+                                      Text(
+                                        product.description ?? "",
+                                        maxLines: 2,
+                                        textAlign: TextAlign.center,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(fontSize: 13.sp),
                                       ),
-                                    ),
-                                  ],
+                                      SizedBox(height: 5.h),
+                                      Text(
+                                        "\$ ${product.price ?? 0}",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16.sp,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                                 Positioned(
                                   right: 2.w,
