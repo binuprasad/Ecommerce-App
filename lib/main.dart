@@ -1,6 +1,13 @@
+import 'package:ecommerce_app/data/Repository/product_repository.dart';
+import 'package:ecommerce_app/data/datasource/remote_datasource.dart';
+import 'package:ecommerce_app/features/blocs/products/products_bloc.dart';
+import 'package:ecommerce_app/features/blocs/products/products_event.dart';
 import 'package:ecommerce_app/features/screens/product_list_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+
 
 void main() {
   runApp(const MyApp());
@@ -15,11 +22,22 @@ class MyApp extends StatelessWidget {
       designSize: Size(390, 844),
       minTextAdapt: true,
       splitScreenMode: true,
-      child: MaterialApp(
-        title: 'Ecommerce App',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-        home: ProductListScreen(),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => ProductBloc(
+              ProductRepository(ProductRemoteDataSource()),
+            )..add(LoadProductsEvent(isInitialLoad: true)),
+          ),
+        ],
+        child: MaterialApp(
+          title: 'Ecommerce App',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          ),
+          home: ProductListScreen(),
+        ),
       ),
     );
   }

@@ -1,8 +1,31 @@
+import 'package:ecommerce_app/features/blocs/products/products_bloc.dart';
+import 'package:ecommerce_app/features/blocs/products/products_event.dart';
+import 'package:ecommerce_app/features/blocs/products/products_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class ProductListScreen extends StatelessWidget {
+class ProductListScreen extends StatefulWidget {
   const ProductListScreen({super.key});
+
+  @override
+  State<ProductListScreen> createState() => _ProductListScreenState();
+}
+
+class _ProductListScreenState extends State<ProductListScreen> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent * 0.8) {
+        context.read<ProductBloc>().add(LoadProductsEvent());
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,10 +40,14 @@ class ProductListScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
+      body:  CustomScrollView(
+  controller: _scrollController,
+  slivers: [
+    SliverToBoxAdapter(
+      child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
         child: Column(
-          crossAxisAlignment: .start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Discover our exclusive \nProducts',
@@ -48,17 +75,47 @@ class ProductListScreen extends StatelessWidget {
                 ),
               ],
             ),
-
             SizedBox(height: 5.h),
-            Expanded(
-              child: GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 12.h,
-                  crossAxisSpacing: 12.w,
-                  childAspectRatio: 0.72,
-                ),
-                itemBuilder: (context, index) {
+          ],
+        ),
+      ),
+    ),
+
+    BlocBuilder<ProductBloc, ProductState>(
+      builder: (context, state) {
+        if (state is ProductLoading && state is! ProductLoaded) {
+          return SliverFillRemaining(
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (state is ProductError) {
+          return SliverFillRemaining(
+            child: Center(child: Text(state.message)),
+          );
+        }
+
+        if (state is ProductLoaded) {
+          final products = state.products;
+
+          return SliverPadding(
+            padding: EdgeInsets.symmetric(horizontal: 12.w),
+            sliver: SliverGrid(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 12.h,
+                crossAxisSpacing: 12.w,
+                childAspectRatio: 0.72,
+              ),
+              delegate: SliverChildBuilderDelegate(
+                (context, index) {
+                  if (index >= state.products.length) {
+                    context.read<ProductBloc>().add(LoadProductsEvent());
+                    return Center(child: CircularProgressIndicator());
+                  }
+
+                  final product = products[index];
+
                   return Card(
                     elevation: 1.5,
                     shape: RoundedRectangleBorder(
@@ -73,7 +130,7 @@ class ProductListScreen extends StatelessWidget {
                               child: AspectRatio(
                                 aspectRatio: 1.5,
                                 child: Image.network(
-                                  '',
+                                  product.thumbnail ?? "",
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) =>
                                       const Icon(Icons.image, size: 48),
@@ -82,7 +139,9 @@ class ProductListScreen extends StatelessWidget {
                             ),
                             SizedBox(height: 5.h),
                             Text(
-                              'Sony WH-1000xM4',
+                              product.title ?? "",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16.sp,
@@ -90,13 +149,15 @@ class ProductListScreen extends StatelessWidget {
                             ),
                             SizedBox(height: 5.h),
                             Text(
-                              'Sony is the leading headphone in india Leading noice ',
+                              product.description ?? "",
+                              maxLines: 2,
                               textAlign: TextAlign.center,
-                              style: TextStyle(),
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 13.sp),
                             ),
                             SizedBox(height: 5.h),
                             Text(
-                              '\$ 800',
+                              "\$ ${product.price ?? 0}",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16.sp,
@@ -115,11 +176,20 @@ class ProductListScreen extends StatelessWidget {
                     ),
                   );
                 },
+                childCount: state.hasMore
+                    ? state.products.length + 1
+                    : state.products.length,
               ),
             ),
-          ],
-        ),
-      ),
+          );
+        }
+
+        return SliverToBoxAdapter(child: SizedBox());
+      },
+    ),
+  ],
+),
+
     );
   }
 }
