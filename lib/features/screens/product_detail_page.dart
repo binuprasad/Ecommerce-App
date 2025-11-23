@@ -79,9 +79,13 @@ class ProductDetailPage extends StatelessWidget {
                                       221,
                                     ),
                                     child: Image.network(
-                                      product.thumbnail,
+                                      product.thumbnail ?? "",
                                       height: 180.h,
                                       fit: BoxFit.contain,
+                                      errorBuilder: (_, __, ___) => const Icon(
+                                        Icons.image_not_supported,
+                                        size: 80,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -112,7 +116,7 @@ class ProductDetailPage extends StatelessWidget {
                           top: 12.h,
                         ),
                         child: Text(
-                          '\$ ${product.price}',
+                          '\$ ${product.price ?? 0}',
                           style: TextStyle(
                             color: Colors.blue,
                             fontSize: 25.sp,
@@ -128,7 +132,7 @@ class ProductDetailPage extends StatelessWidget {
                           vertical: 8.h,
                         ),
                         child: Text(
-                          product.title,
+                          product.title ?? "",
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -195,7 +199,7 @@ class ProductDetailPage extends StatelessWidget {
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 16.w),
                               child: Text(
-                                product.description,
+                                product.description ?? "",
                                 style: TextStyle(
                                   fontSize: 16.sp,
                                   color: Colors.grey,
@@ -204,7 +208,7 @@ class ProductDetailPage extends StatelessWidget {
                             ),
 
                             ListView.builder(
-                              itemCount: product.reviews.length,
+                              itemCount: product.reviews?.length ?? 0,
                               itemBuilder: (context, index) => Padding(
                                 padding: EdgeInsets.symmetric(
                                   vertical: 5.h,
@@ -214,7 +218,7 @@ class ProductDetailPage extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      product.reviews[index].comment,
+                                      product.reviews![index].comment ?? "",
                                       style: TextStyle(
                                         fontSize: 15.sp,
                                         fontWeight: FontWeight.w600,
@@ -225,12 +229,13 @@ class ProductDetailPage extends StatelessWidget {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          '- ${product.reviews[index].reviewerName}',
+                                          '- ${product.reviews![index].reviewerName ?? ""}',
                                         ),
                                         Text(
-                                          DateFormat(
-                                            'dd-MM-yyyy',
-                                          ).format(product.reviews[index].date),
+                                          DateFormat('dd-MM-yyyy').format(
+                                            product.reviews![index].date ??
+                                                DateTime.now(),
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -267,16 +272,16 @@ class ProductDetailPage extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (_) => EditProductPage(
-                        id: product.id,
-                        title: product.title,
-                        price: product.price.toInt(),
-                        description: product.description,
+                        id: product.id ?? 1,
+                        title: product.title ?? "",
+                        price: product.price?.toInt() ?? 0,
+                        description: product.description ?? "",
                       ),
                     ),
                   ).then((updated) {
                     if (updated == true) {
                       context.read<ProductDetailBloc>().add(
-                        LoadProductDetailEvent(product.id),
+                        LoadProductDetailEvent(product.id ?? 0),
                       );
                     }
                   });

@@ -11,7 +11,7 @@ class EditProductBloc extends Bloc<EditProductEvent, EditProductState> {
   EditProductBloc(this.repository) : super(EditProductInitial()) {
     on<UpdateProductEvent>((event, emit) async {
       try {
-        emit(EditProductInitial());
+        emit(EditLoading());
         final updatedProduct = await repository.updateProduct(
           event.id,
           event.data,

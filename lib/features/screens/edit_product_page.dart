@@ -133,9 +133,23 @@ class _EditProductPageState extends State<EditProductPage> {
                         UpdateProductEvent(widget.id, data),
                       );
                     },
-                    child: Text(
-                      'Update Product',
-                      style: TextStyle(fontSize: 18.sp, color: Colors.white),
+                    child: BlocBuilder<EditProductBloc, EditProductState>(
+                      builder: (context, state) {
+
+                        if (state is EditLoading) {
+                         return Center(child: Padding(
+                           padding:  EdgeInsets.symmetric(vertical: 5.h),
+                           child: CircularProgressIndicator(color: Colors.white,),
+                         ));
+                        }
+                        return Text(
+                          'Update Product',
+                          style: TextStyle(
+                            fontSize: 18.sp,
+                            color: Colors.white,
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),

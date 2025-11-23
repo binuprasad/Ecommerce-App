@@ -1,5 +1,4 @@
 import 'package:ecommerce_app/data/Repository/product_repository.dart';
-import 'package:ecommerce_app/data/models/product_listing_model.dart';
 import 'package:ecommerce_app/features/blocs/products/products_event.dart';
 import 'package:ecommerce_app/features/blocs/products/products_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
