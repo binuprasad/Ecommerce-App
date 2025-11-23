@@ -6,20 +6,20 @@ import 'package:ecommerce_app/data/models/product_update_model.dart';
 class ProductRemoteDataSource {
   Future<ProductResponse> getProducts(int limit, int skip) async {
     final response = await DioClient.dio.get(
-      "",
+      "/products",
       queryParameters: {"limit": limit, "skip": skip},
     );
     return ProductResponse.fromJson(response.data);
   }
 
   Future<ProductDetailResponse> getProductDetails(int id) async {
-    final response = await DioClient.dio.get('/$id');
+    final response = await DioClient.dio.get('/products/$id');
     return ProductDetailResponse.fromJson(response.data);
   }
 
   Future<ProductUpdatelResponse> updateProduct(int id, Map<String, dynamic> data) async {
   final response = await DioClient.dio.put(
-    "/$id",
+    "/products/$id",
     data: data,
   );
 

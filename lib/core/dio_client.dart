@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 class DioClient {
   static Dio dio = Dio(
     BaseOptions(
-      baseUrl: "https://dummyjson.com/products",
+      baseUrl: "https://dummyjson.com",
       // connectTimeout: Duration(seconds: 10),
     ),
   );

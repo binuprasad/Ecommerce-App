@@ -134,6 +134,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                           },
                           child: Card(
                             elevation: 1.5,
+                            color: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12.r),
                             ),
